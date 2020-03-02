@@ -25,6 +25,12 @@ namespace TablesAPI.Controllers
         {
             _settings = settings.Value;
         }
+
+        [HttpGet]
+        public IActionResult Get()
+        {
+            return Ok();
+        }
         
         [HttpPost("{tableName}/records")]
         public IActionResult CreateRow(string tableName, [FromBody] RowRequest request)

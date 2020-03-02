@@ -1,9 +1,11 @@
+using System.IO;
 using System.Net;
 using System.Net.Http;
 using System.Runtime.CompilerServices;
 using System.Text;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Mvc.Testing;
+using Microsoft.Extensions.Configuration;
 using Newtonsoft.Json;
 using TablesAPI;
 using Xunit;
@@ -22,18 +24,22 @@ namespace ApiTests
 
         public UnitTest1(WebApplicationFactory<Startup> factory)
         {
+            var projectDir = Directory.GetCurrentDirectory();
+            var configPath = Path.Combine(projectDir, "appsettings.json");
+
             _factory = factory;
             factory.WithWebHostBuilder(builder =>
             {
-                builder.ConfigureAppConfiguration(new Config)
-            })
+                builder.ConfigureAppConfiguration((context, config) =>
+                {
+                    config.AddJsonFile(configPath);
+                });
+            });
         }
         
         [Fact]
         public async Task PutThingInTable_AddsRowToTable()
-        {
-            var testDbConnectionString = "Server=localhost;Database=tables_integ;Uid=admin;Pwd=password;";
-            
+        {            
             var client = _factory.CreateClient();
 
             var tableName = "basic_things";
